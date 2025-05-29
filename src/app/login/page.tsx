@@ -1,6 +1,6 @@
 "use client";
 import FormLayout from "@/components/FormLayout";
-import CustomInput from "@/components/inputs/customInput";
+import CustomInput from "@/components/inputs/CustomInput";
 import { EMAIL, PASSWORD } from "@/utils/regex";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -23,12 +23,10 @@ const LoginPage = () => {
     handleSubmit,
   } = useForm<formtype>();
 
- 
-
   const router = useRouter();
 
   const dispatch = useDispatch();
-  const { error,users } = useSelector((state: RootState) => state.user);
+  const { error, users } = useSelector((state: RootState) => state.user);
   console.log(users);
   const formSubmit = (value: formtype) => {
     dispatch(login({ email: value.email, password: value.password }));
@@ -45,6 +43,7 @@ const LoginPage = () => {
 
   return (
     <Layout>
+      <title>Login</title>
       <div className="flex justify-center items-center pt-20">
         <FormLayout title="Login">
           <form className="space-y-3" onSubmit={handleSubmit(formSubmit)}>

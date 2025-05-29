@@ -1,5 +1,6 @@
 "use client";
 import { RootState } from "@/utils/store";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -31,11 +32,11 @@ const Layout = (props: { children: ReactNode }) => {
             : "flex-col gap-2 text-base font-medium"
         } `}
       >
-        <a href="/">About</a>
+        <Link href="/">About</Link>
         {currentpath === "login" ? (
-          <a href="/signup">Signup</a>
+          <Link href="/signup">Signup</Link>
         ) : (
-          <a href="/login">Login</a>
+          <Link href="/login">Login</Link>
         )}
       </div>
     );

@@ -1,6 +1,7 @@
 "use client";
 import { RootState } from "@/utils/store";
 import { logout } from "@/utils/userSlice";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,16 +12,16 @@ const ProductedAppLayout = (props: { children: ReactNode }) => {
   const [menuopen, setmenuopen] = useState(false);
   const { currentUser } = useSelector((state: RootState) => state.user);
   const router = useRouter();
-  const [loading, setloading] = useState(false);
+  const [loading, setloading] = useState(true);
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     setloading(false);
-  //   } else {
-  //     router.push("/login");
-  //   }
-  // }, [currentUser]);
+  useEffect(() => {
+    if (currentUser) {
+      setloading(false);
+    } else {
+      router.push("/login");
+    }
+  }, [currentUser]);
 
   const Menu = (props: { view: "desktop" | "mobile" }) => {
     return (
@@ -31,16 +32,17 @@ const ProductedAppLayout = (props: { children: ReactNode }) => {
             : "flex-col gap-2 text-base font-medium"
         } `}
       >
-        <a href="/">About</a>
-        <a href="/your-notes">Notes</a>
-        <a href="/">Account</a>
-        <a
+        <Link href="/">About</Link>
+        <Link href="/your-notes">Notes</Link>
+        <Link href="/">Account</Link>
+        <div
+          className="cursor-pointer"
           onClick={() => {
             dispatch(logout());
           }}
         >
           Logout
-        </a>
+        </div>
       </div>
     );
   };

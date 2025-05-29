@@ -4,7 +4,7 @@ interface Note {
   id: string;
   content: string;
   title:string;
-  ownerid: string;
+  ownerid: string | undefined;
 }
 
 interface NotesState {
