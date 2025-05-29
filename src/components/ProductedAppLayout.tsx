@@ -1,11 +1,27 @@
 "use client";
-import { usePathname } from "next/navigation";
-import React, { ReactNode, useState } from "react";
+import { RootState } from "@/utils/store";
+import { logout } from "@/utils/userSlice";
+import { usePathname, useRouter } from "next/navigation";
+import React, { ReactNode, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const ProductedAppLayout = (props: { children: ReactNode }) => {
   const { children } = props;
   const pathname = usePathname();
   const [menuopen, setmenuopen] = useState(false);
+  const { currentUser } = useSelector((state: RootState) => state.user);
+  const router = useRouter();
+  const [loading, setloading] = useState(false);
+  const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     setloading(false);
+  //   } else {
+  //     router.push("/login");
+  //   }
+  // }, [currentUser]);
+
   const Menu = (props: { view: "desktop" | "mobile" }) => {
     return (
       <div
@@ -18,7 +34,13 @@ const ProductedAppLayout = (props: { children: ReactNode }) => {
         <a href="/">About</a>
         <a href="/your-notes">Notes</a>
         <a href="/">Account</a>
-        <a href="/login">Login</a>
+        <a
+          onClick={() => {
+            dispatch(logout());
+          }}
+        >
+          Logout
+        </a>
       </div>
     );
   };
@@ -52,15 +74,19 @@ const ProductedAppLayout = (props: { children: ReactNode }) => {
         </div>
 
         <div className="flex justify-center p-5 items-center">
-          <div className="w-full md:w-[80%]">
-            <div className="text-subtext ">
-              Homepage /{" "}
-              <span className="text-foreground font-semibold capitalize">
-                {currentpath}
-              </span>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <div className="w-full md:w-[80%]">
+              <div className="text-subtext ">
+                Homepage /{" "}
+                <span className="text-foreground font-semibold capitalize">
+                  {currentpath}
+                </span>
+              </div>
+              <div>{children}</div>
             </div>
-            <div>{children}</div>
-          </div>
+          )}
         </div>
       </div>
     </div>

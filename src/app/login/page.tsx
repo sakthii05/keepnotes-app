@@ -3,20 +3,45 @@ import FormLayout from "@/components/FormLayout";
 import CustomInput from "@/components/inputs/customInput";
 import { EMAIL, PASSWORD } from "@/utils/regex";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Layout from "@/components/Layout";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/utils/store";
+import { login } from "@/utils/userSlice";
+import { toast } from "react-toastify";
+
+type formtype = {
+  password: string;
+  email: string;
+};
 
 const LoginPage = () => {
   const {
     formState: { errors },
     control,
     handleSubmit,
-  } = useForm();
+  } = useForm<formtype>();
+
+ 
 
   const router = useRouter();
 
-  const formSubmit = () => {};
+  const dispatch = useDispatch();
+  const { error,users } = useSelector((state: RootState) => state.user);
+  console.log(users);
+  const formSubmit = (value: formtype) => {
+    dispatch(login({ email: value.email, password: value.password }));
+    setTimeout(() => {
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
+      toast.success(`Welcome back!`);
+      router.push("/your-notes");
+    }, 1000);
+  };
 
   return (
     <Layout>
@@ -28,19 +53,18 @@ const LoginPage = () => {
               label="Email"
               control={control}
               errors={errors}
-              isrequired={true}
               rules={{
                 required: "Email is required",
                 pattern: { message: "Invaild Email", value: EMAIL },
               }}
               placeholder={"Email"}
+              type="email"
             />
             <CustomInput
               name="password"
               label="Password"
               control={control}
               errors={errors}
-              isrequired={true}
               rules={{
                 required: "Password is required",
                 pattern: {
@@ -49,6 +73,7 @@ const LoginPage = () => {
                 },
               }}
               placeholder={"Password"}
+              type="password"
             />
             <div className="py-5 flex justify-center items-center gap-4 font-mono">
               <button

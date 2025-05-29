@@ -1,34 +1,49 @@
-'use client'
-import { usePathname } from "next/navigation";
-import React, { ReactNode, useState } from "react";
+"use client";
+import { RootState } from "@/utils/store";
+import { usePathname, useRouter } from "next/navigation";
+import React, { ReactNode, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 const Layout = (props: { children: ReactNode }) => {
   const { children } = props;
   const pathname = usePathname();
-
+  const router = useRouter();
+  const [loading, setloading] = useState(true);
   const currentpath = pathname?.split("/")[1].replace("-", " ");
-   const [menuopen, setmenuopen] = useState(false);
-    const Menu = (props: { view: "desktop" | "mobile" }) => {
-      return (
-        <div
-          className={`flex ${
-            props.view === "desktop"
-              ? "flex-row gap-4 items-center font-semibold"
-              : "flex-col gap-2 text-base font-medium"
-          } `}
-        >
-          <a href="/">About</a>
-          {currentpath === "login" ? (
-            <a href="/signup">Signup</a>
-          ) : (
-            <a href="/login">Login</a>
-          )}
-        </div>
-      );
-    };
+  const [menuopen, setmenuopen] = useState(false);
+  const { currentUser } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    if (currentUser) {
+      router.push("/your-notes");
+    } else {
+      setloading(false);
+    }
+  }, [currentUser]);
+  
+  const Menu = (props: { view: "desktop" | "mobile" }) => {
+    return (
+      <div
+        className={`flex ${
+          props.view === "desktop"
+            ? "flex-row gap-4 items-center font-semibold"
+            : "flex-col gap-2 text-base font-medium"
+        } `}
+      >
+        <a href="/">About</a>
+        {currentpath === "login" ? (
+          <a href="/signup">Signup</a>
+        ) : (
+          <a href="/login">Login</a>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="flex justify-center items-center w-screen">
+      <ToastContainer />
       <div className="max-w-[2650px] w-full">
         {/* topbar */}
         <div className="flex justify-center bg-lightblue text-blue">
@@ -56,15 +71,19 @@ const Layout = (props: { children: ReactNode }) => {
         </div>
 
         <div className="flex justify-center p-5 items-center">
-          <div className="w-full md:w-[80%]">
-            <div className="text-subtext ">
-              Homepage /{" "}
-              <span className="text-foreground font-semibold capitalize">
-                {currentpath}
-              </span>
+          {loading ? (
+            <div>Loading...</div>
+          ) : (
+            <div className="w-full md:w-[80%]">
+              <div className="text-subtext ">
+                Homepage /{" "}
+                <span className="text-foreground font-semibold capitalize">
+                  {currentpath}
+                </span>
+              </div>
+              <div>{children}</div>
             </div>
-            <div>{children}</div>
-          </div>
+          )}
         </div>
       </div>
     </div>

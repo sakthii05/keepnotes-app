@@ -12,11 +12,10 @@ interface CustomInputsProps {
   label: string;
   name: keyof FieldValues;
   errors: FieldErrors<FieldValues>;
-  isrequired?: boolean;
   rules?: RegisterOptions<FieldValues>;
   control: Control<any>;
   disabled?: boolean;
-  type?: "text" | "password" | "number";
+  type?: string;
   autoComplete?: string;
   afterChange?: (val: string) => void;
   startContent?: ReactNode;
@@ -28,13 +27,13 @@ const CustomInput = (props: CustomInputsProps) => {
   const {
     label,
     name,
-    isrequired,
     rules,
     errors,
     control,
     disabled,
     afterChange,
     placeholder,
+    type,
   } = props;
 
   return (
@@ -48,6 +47,7 @@ const CustomInput = (props: CustomInputsProps) => {
           <div className="flex flex-col gap-1 font-mono">
             {label && <label className="font-medium">{label}</label>}
             <input
+              type={type || "text"}
               value={field.value}
               onChange={field.onChange}
               onBlur={(e) => {
@@ -66,8 +66,8 @@ const CustomInput = (props: CustomInputsProps) => {
               )}
             />
           </div>
-         )}
-       /> 
+        )}
+      />
     </div>
   );
 };

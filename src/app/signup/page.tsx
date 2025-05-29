@@ -3,9 +3,21 @@ import FormLayout from "@/components/FormLayout";
 import CustomInput from "@/components/inputs/customInput";
 import { EMAIL, PASSWORD } from "@/utils/regex";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Layout from "@/components/Layout";
+import { useDispatch, useSelector } from "react-redux";
+import { signup, clearError } from "@/utils/userSlice";
+import { v4 as uuid } from "uuid";
+import { RootState } from "@/utils/store";
+import { toast } from "react-toastify";
+
+type formtype = {
+  username: string;
+  password: string;
+  email: string;
+  confirm_password: string;
+};
 
 const SignUp = () => {
   const {
@@ -13,12 +25,36 @@ const SignUp = () => {
     control,
     handleSubmit,
     watch,
-  } = useForm();
+  } = useForm<formtype>();
+
+  const dispatch = useDispatch();
+  const { error } = useSelector(
+    (state: RootState) => state.user
+  );
 
   const router = useRouter();
   const password = watch("password");
 
-  const formSubmit = () => {};
+  const formSubmit = (value: formtype) => {
+    clearError();
+    dispatch(
+      signup({
+        email: value.email,
+        password: value.password,
+        username: value.username,
+        id: uuid(),
+      })
+    );
+    setTimeout(() => {
+      if (error) {
+        toast.error(error);
+        return;
+      }
+
+      toast.success(`Thanks ${value.username} for creating account`);
+      router.push("/login");
+    }, 1000);
+  };
 
   return (
     <Layout>
@@ -30,7 +66,6 @@ const SignUp = () => {
               label="Username"
               control={control}
               errors={errors}
-              isrequired={true}
               rules={{
                 required: "Username is required",
               }}
@@ -41,19 +76,18 @@ const SignUp = () => {
               label="Email"
               control={control}
               errors={errors}
-              isrequired={true}
               rules={{
                 required: "Email is required",
                 pattern: { message: "Invaild Email", value: EMAIL },
               }}
               placeholder={"Email"}
+              type="email"
             />
             <CustomInput
               name="password"
               label="Password"
               control={control}
               errors={errors}
-              isrequired={true}
               rules={{
                 required: "Password is required",
                 pattern: {
@@ -62,19 +96,20 @@ const SignUp = () => {
                 },
               }}
               placeholder={"Password"}
+              type="password"
             />
             <CustomInput
               name="confirm_password"
               label="Confirm Password"
               control={control}
               errors={errors}
-              isrequired={true}
               rules={{
                 required: "Confirm Password is required",
                 validate: (value) =>
                   value === password || "Passwords do not match",
               }}
               placeholder={"Password"}
+              type="password"
             />
             <div className="py-5 flex justify-center items-center gap-4 font-mono">
               <button
